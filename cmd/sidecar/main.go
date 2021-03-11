@@ -20,7 +20,11 @@ func main() {
 }
 
 func app(args []string) error {
-	flag := parseFlags(args[0])
+	flag := newFlags(args[0])
+	err := flag.Parse(args[1:])
+	if err != nil {
+		return err
+	}
 
 	conf, err := config.Find()
 	if err != nil {

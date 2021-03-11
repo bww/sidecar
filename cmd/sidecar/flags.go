@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+
+	"sidecar/route"
 )
 
 type Flags struct {
@@ -13,7 +15,7 @@ type Flags struct {
 	Quiet   bool
 	Project string
 	Headers map[string]string
-	Routes  []string
+	Routes  []route.Route
 
 	Values struct {
 		Debug   *bool
@@ -24,7 +26,7 @@ type Flags struct {
 	}
 }
 
-func parseFlags(cmd string) *Flags {
+func newFlags(cmd string) *Flags {
 	f := &Flags{
 		FlagSet: flag.NewFlagSet(cmd, flag.ExitOnError),
 	}
@@ -38,11 +40,24 @@ func parseFlags(cmd string) *Flags {
 	return f
 }
 
-func (f *Flags) Parse(args []string) {
+func (f *Flags) Parse(args []string) error {
 	f.FlagSet.Parse(args)
+
 	f.Debug = *f.Values.Debug
 	f.Verbose = *f.Values.Verbose
 	f.Quiet = *f.Values.Quiet
+
+	var routes []route.Route
+	for _, e := range f.Values.Routes {
+		r, err := route.Parse(e)
+		if err != nil {
+			return err
+		}
+		routes = append(routes, r)
+	}
+
+	f.Routes = routes
+	return nil
 }
 
 type flagList []string
