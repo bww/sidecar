@@ -1,6 +1,8 @@
 package config
 
 import (
+	"os"
+
 	"sidecar/store"
 )
 
@@ -15,7 +17,7 @@ type Profile struct {
 }
 
 type Config struct {
-	Profiles map[string]Proflie `json:"profiles" yaml:"profiles"`
+	Profiles map[string]Profile `json:"profiles" yaml:"profiles"`
 }
 
 func Find() (Config, error) {
@@ -25,8 +27,8 @@ func Find() (Config, error) {
 	}
 	var c Config
 	err = store.Load(p, &c)
-	if err != nil && os.IsNotExist(err) {
-		return defaultConfig, nil
+	if err != nil && !os.IsNotExist(err) {
+		return Config{}, err
 	}
 	return c, nil
 }
