@@ -40,7 +40,9 @@ func NewWithRoutes(conf Config, rts []route.Route) (*Proxy, error) {
 func (p *Proxy) ListenAndServe() error {
 	errs := make(chan error)
 	for _, e := range p.svcs {
-		if p.Verbose || p.Debug {
+		if p.Debug {
+			log.Printf("Starting %s → %s", e.Addr, e.Handler.(Handler).Describe())
+		} else if p.Verbose {
 			log.Printf("Starting %s → %v", e.Addr, e.Handler)
 		}
 		go func(s *http.Server) {

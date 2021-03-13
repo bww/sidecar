@@ -17,6 +17,7 @@ type Flags struct {
 	Config  string
 	Routes  []route.Route
 	Headers map[string]string
+	APIKey  route.APIKey
 
 	Values struct {
 		Debug   *bool

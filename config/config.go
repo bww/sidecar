@@ -10,7 +10,7 @@ import (
 type Config struct {
 	Routes  []route.Route     `json:"routes" yaml:"routes"`
 	Headers map[string]string `json:"headers" yaml:"headers"`
-	APIKey  route.APIKey      `json:"api_key" yaml:"api_key"`
+	APIKey  route.APIKey      `json:"api_key" yaml:"api-key"`
 	Debug   bool              `json:"debug" yaml:"debug"`
 	Verbose bool              `json:"verbose" yaml:"verbose"`
 }

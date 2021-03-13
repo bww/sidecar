@@ -39,12 +39,28 @@ func app(args []string) error {
 	conf.Debug = conf.Debug || flag.Debug
 	conf.Verbose = conf.Verbose || flag.Verbose
 
+	hdrs := make(map[string]string)
+	for k, v := range conf.Headers {
+		hdrs[k] = v
+	}
+	for k, v := range flag.Headers {
+		hdrs[k] = v
+	}
+
+	var apikey route.APIKey
+	if conf.APIKey.Valid() {
+		apikey = conf.APIKey
+	}
+	if flag.APIKey.Valid() {
+		apikey = conf.APIKey
+	}
+
 	rts := make([]route.Route, 0, len(conf.Routes)+len(flag.Routes))
 	for _, e := range conf.Routes {
-		rts = append(rts, e)
+		rts = append(rts, e.WithHeaders(hdrs).WithAPIKey(apikey))
 	}
 	for _, e := range flag.Routes {
-		rts = append(rts, e)
+		rts = append(rts, e.WithHeaders(hdrs).WithAPIKey(apikey))
 	}
 	if len(rts) < 1 {
 		return fmt.Errorf("No routes defined; nothing to do")

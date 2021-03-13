@@ -12,6 +12,10 @@ type APIKey struct {
 	Password string `json:"password" yaml:"password"`
 }
 
+func (a APIKey) Valid() bool {
+	return a.Username != ""
+}
+
 type Route struct {
 	Addr    string            `json:"addr" yaml:"addr"`
 	URL     string            `json:"url" yaml:"url"`
@@ -30,4 +34,29 @@ func Parse(s string) (Route, error) {
 		Addr: addr,
 		URL:  base,
 	}, nil
+}
+
+func (r Route) WithAPIKey(k APIKey) Route {
+	return Route{
+		Addr:    r.Addr,
+		URL:     r.URL,
+		Headers: r.Headers,
+		APIKey:  k,
+	}
+}
+
+func (r Route) WithHeaders(h map[string]string) Route {
+	d := make(map[string]string)
+	for k, v := range r.Headers {
+		d[k] = v
+	}
+	for k, v := range h {
+		d[k] = v
+	}
+	return Route{
+		Addr:    r.Addr,
+		URL:     r.URL,
+		Headers: d,
+		APIKey:  r.APIKey,
+	}
 }

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 
 	"sidecar/route"
 )
@@ -80,4 +81,16 @@ func (h Handler) ServeHTTP(rsp http.ResponseWriter, req *http.Request) {
 
 func (h Handler) String() string {
 	return h.url.String()
+}
+
+func (h Handler) Describe() string {
+	b := &strings.Builder{}
+	b.WriteString(h.url.String())
+	for k, v := range h.headers {
+		b.WriteString("\n\t")
+		b.WriteString(k)
+		b.WriteString(": ")
+		b.WriteString(strings.Join(v, ", "))
+	}
+	return b.String()
 }
