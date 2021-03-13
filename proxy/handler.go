@@ -50,6 +50,7 @@ func (h Handler) director(req *http.Request) {
 	src := fmt.Sprintf("%s%v", req.Host, req.URL)
 	target := h.url
 
+	req.Host = target.Host
 	req.URL.Scheme = target.Scheme
 	req.URL.Host = target.Host
 	req.URL.Path, req.URL.RawPath = joinURLPath(target, req.URL)
@@ -59,8 +60,6 @@ func (h Handler) director(req *http.Request) {
 	} else {
 		req.URL.RawQuery = target.RawQuery + "&" + req.URL.RawQuery
 	}
-
-	req.Host = target.Host
 
 	if _, ok := req.Header["User-Agent"]; !ok {
 		req.Header.Set("User-Agent", "") // explicitly disable User-Agent so it's not set to default value
