@@ -39,7 +39,8 @@ func newHandler(conf Config, rte route.Route) (Handler, error) {
 		headers: h,
 	}
 	v.proxy = &httputil.ReverseProxy{
-		Director: v.director,
+		Director:       v.director,
+		ModifyResponse: v.interceptor,
 	}
 
 	return v, nil
@@ -73,6 +74,16 @@ func (h Handler) director(req *http.Request) {
 	if h.Verbose || h.Debug {
 		log.Printf("%v → %v", src, req.URL)
 	}
+}
+
+func (h Handler) interceptor(rsp *http.Response) error {
+	if h.CORS {
+		hdr := rsp.Header
+		if v := hdr.Get("Access-Control-Allow-Origin"); v == "" {
+			hdr.Set("Access-Control-Allow-Origin", "*")
+		}
+	}
+	return nil
 }
 
 func (h Handler) ServeHTTP(rsp http.ResponseWriter, req *http.Request) {

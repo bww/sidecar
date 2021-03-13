@@ -9,6 +9,8 @@ import (
 )
 
 type Config struct {
+	Routes  []route.Route
+	CORS    bool
 	Verbose bool
 	Debug   bool
 }
@@ -18,9 +20,9 @@ type Proxy struct {
 	svcs []*http.Server
 }
 
-func NewWithRoutes(conf Config, rts []route.Route) (*Proxy, error) {
+func NewWithConfig(conf Config) (*Proxy, error) {
 	var svcs []*http.Server
-	for _, e := range rts {
+	for _, e := range conf.Routes {
 		h, err := newHandler(conf, e)
 		if err != nil {
 			return nil, err
