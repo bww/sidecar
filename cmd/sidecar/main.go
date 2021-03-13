@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"sidecar/config"
+	"sidecar/proxy"
+	"sidecar/route"
 )
 
 var ( // set at compile time via the linker
@@ -34,6 +36,19 @@ func app(args []string) error {
 		}
 	}
 
-	_ = conf
+	rts := make([]route.Route, 0, len(conf.Routes)+len(flag.Routes))
+	for _, e := range conf.Routes {
+		rts = append(rts, e)
+	}
+	for _, e := range flag.Routes {
+		rts = append(rts, e)
+	}
+	if len(rts) < 1 {
+		return fmt.Errorf("No routes defined; nothing to do")
+	}
+
+	pxy := proxy.NewWithRoutes(rts)
+	panic(pxy.ListenAndServe())
+
 	return nil
 }

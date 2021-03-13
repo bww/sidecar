@@ -7,15 +7,10 @@ import (
 	"sidecar/store"
 )
 
-type APIKey struct {
-	Username string `json:"username" yaml:"username"`
-	Password string `json:"password" yaml:"password"`
-}
-
 type Config struct {
-	Routes  []store.Route     `json:"routes" yaml:"routes"`
+	Routes  []route.Route     `json:"routes" yaml:"routes"`
 	Headers map[string]string `json:"headers" yaml:"headers"`
-	APIKey  APIKey            `json:"api_key" yaml:"api_key"`
+	APIKey  route.APIKey      `json:"api_key" yaml:"api_key"`
 }
 
 func Find() (Config, error) {
