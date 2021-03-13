@@ -1,20 +1,27 @@
 package proxy
 
 import (
+	"log"
 	"net/http"
 	"time"
 
 	"sidecar/route"
 )
 
+type Config struct {
+	Verbose bool
+	Debug   bool
+}
+
 type Proxy struct {
+	Config
 	svcs []*http.Server
 }
 
-func NewWithRoutes(r []route.Route) (*Proxy, error) {
+func NewWithRoutes(conf Config, rts []route.Route) (*Proxy, error) {
 	var svcs []*http.Server
-	for _, e := range r {
-		h, err := e.Handler()
+	for _, e := range rts {
+		h, err := newHandler(conf, e)
 		if err != nil {
 			return nil, err
 		}
@@ -27,12 +34,15 @@ func NewWithRoutes(r []route.Route) (*Proxy, error) {
 		}
 		svcs = append(svcs, s)
 	}
-	return &Proxy{svcs}, nil
+	return &Proxy{conf, svcs}, nil
 }
 
 func (p *Proxy) ListenAndServe() error {
 	errs := make(chan error)
 	for _, e := range p.svcs {
+		if p.Verbose || p.Debug {
+			log.Printf("Starting %s → %v", e.Addr, e.Handler)
+		}
 		go func(s *http.Server) {
 			errs <- s.ListenAndServe()
 		}(e)

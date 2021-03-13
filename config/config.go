@@ -11,6 +11,8 @@ type Config struct {
 	Routes  []route.Route     `json:"routes" yaml:"routes"`
 	Headers map[string]string `json:"headers" yaml:"headers"`
 	APIKey  route.APIKey      `json:"api_key" yaml:"api_key"`
+	Debug   bool              `json:"debug" yaml:"debug"`
+	Verbose bool              `json:"verbose" yaml:"verbose"`
 }
 
 func Find() (Config, error) {

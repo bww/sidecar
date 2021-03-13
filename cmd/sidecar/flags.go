@@ -35,7 +35,6 @@ func newFlags(cmd string) *Flags {
 
 	f.Values.Debug = f.Bool("debug", false, "Be extremely verbose.")
 	f.Values.Verbose = f.Bool("verbose", false, "Be more verbose.")
-	f.Values.Quiet = f.Bool("quiet", false, "Only print minimal output.")
 	f.Values.Config = f.String("config", "", "The configuration file to use.")
 
 	f.Var(&f.Values.Routes, "route", "Define a route that maps a local port to a remote base URI, specified as '<port>:<uri>'. Provide -route repeatedly to set many routes.")
@@ -48,7 +47,6 @@ func (f *Flags) Parse(args []string) error {
 
 	f.Debug = *f.Values.Debug
 	f.Verbose = *f.Values.Verbose
-	f.Quiet = *f.Values.Quiet
 	f.Config = *f.Values.Config
 
 	var routes []route.Route

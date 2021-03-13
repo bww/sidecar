@@ -36,6 +36,9 @@ func app(args []string) error {
 		}
 	}
 
+	conf.Debug = conf.Debug || flag.Debug
+	conf.Verbose = conf.Verbose || flag.Verbose
+
 	rts := make([]route.Route, 0, len(conf.Routes)+len(flag.Routes))
 	for _, e := range conf.Routes {
 		rts = append(rts, e)
@@ -47,8 +50,14 @@ func app(args []string) error {
 		return fmt.Errorf("No routes defined; nothing to do")
 	}
 
-	pxy := proxy.NewWithRoutes(rts)
-	panic(pxy.ListenAndServe())
+	pxy, err := proxy.NewWithRoutes(proxy.Config{
+		Verbose: conf.Verbose,
+		Debug:   conf.Debug,
+	}, rts)
+	if err != nil {
+		return err
+	}
 
+	panic(pxy.ListenAndServe())
 	return nil
 }

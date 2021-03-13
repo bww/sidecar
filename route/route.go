@@ -1,11 +1,7 @@
 package route
 
 import (
-	"encoding/base64"
 	"errors"
-	"net/http"
-	"net/http/httputil"
-	"net/url"
 	"strings"
 )
 
@@ -34,62 +30,4 @@ func Parse(s string) (Route, error) {
 		Addr: addr,
 		URL:  base,
 	}, nil
-}
-
-func (r Route) Handler() (Handler, error) {
-	u, err := url.Parse(r.URL)
-	if err != nil {
-		return Handler{}, err
-	}
-
-	h := make(http.Header)
-	for k, v := range r.Headers {
-		h.Set(k, v)
-	}
-	if r.APIKey.Username != "" {
-		h.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(r.APIKey.Username+":"+r.APIKey.Password)))
-	}
-
-	v := Handler{
-		proxy:   &httputil.ReverseProxy{},
-		url:     u,
-		headers: h,
-	}
-
-	v.proxy.Director = v.director
-
-	return v, nil
-}
-
-type Handler struct {
-	proxy   *httputil.ReverseProxy
-	url     *url.URL
-	headers http.Header
-}
-
-func (h Handler) director(req *http.Request) {
-	target := h.url
-
-	req.URL.Scheme = target.Scheme
-	req.URL.Host = target.Host
-	req.URL.Path, req.URL.RawPath = joinURLPath(target, req.URL)
-
-	if target.RawQuery == "" || req.URL.RawQuery == "" {
-		req.URL.RawQuery = target.RawQuery + req.URL.RawQuery
-	} else {
-		req.URL.RawQuery = target.RawQuery + "&" + req.URL.RawQuery
-	}
-
-	if _, ok := req.Header["User-Agent"]; !ok {
-		req.Header.Set("User-Agent", "") // explicitly disable User-Agent so it's not set to default value
-	}
-	for k, v := range h.headers {
-		for _, e := range v {
-			req.Header.Set(k, e)
-		}
-	}
-}
-
-func (h Handler) ServeHTTP(rsp http.ResponseWriter, req *http.Request) {
-	h.proxy.ServeHTTP(rsp, req)
 }
