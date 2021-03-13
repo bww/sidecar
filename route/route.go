@@ -9,8 +9,9 @@ import (
 var errMalformedRoute = errors.New("Malformed route")
 
 type Route struct {
-	Addr string
-	URL  *url.URL
+	Addr    string            `json:"addr" yaml:"addr"`
+	URL     string            `json:"url" yaml:"url"`
+	Headers map[string]string `json:"headers" yaml:"headers"`
 }
 
 func Parse(s string) (Route, error) {
@@ -20,12 +21,8 @@ func Parse(s string) (Route, error) {
 	} else {
 		return Route{}, errMalformedRoute
 	}
-	u, err := url.Parse(base)
-	if err != nil {
-		return Route{}, err
-	}
 	return Route{
 		Addr: addr,
-		URL:  u,
+		URL:  base,
 	}, nil
 }

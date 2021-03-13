@@ -26,12 +26,14 @@ func app(args []string) error {
 		return err
 	}
 
-	conf, err := config.Find()
-	if err != nil {
-		return err
+	var conf config.Config
+	if p := flag.Config; p != "" {
+		conf, err = config.Load(p)
+		if err != nil {
+			return err
+		}
 	}
 
-	_ = flag
 	_ = conf
 	return nil
 }
