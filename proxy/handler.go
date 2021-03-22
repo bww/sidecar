@@ -71,7 +71,7 @@ func (h Handler) director(req *http.Request) {
 	}
 
 	if h.Verbose || h.Debug {
-		log.Printf("%v → %v", src, req.URL)
+		log.Print(descRoute(src, req.URL.String()))
 	}
 }
 
@@ -103,4 +103,16 @@ func (h Handler) Describe() string {
 		b.WriteString(strings.Join(v, ", "))
 	}
 	return b.String()
+}
+
+func descRoute(src, dst string) string {
+	s, d := len(src), len(dst)
+	for s > 0 && d > 0 {
+		if src[s-1] != dst[d-1] {
+			break
+		}
+		s--
+		d--
+	}
+	return fmt.Sprintf("{%s → %s}%s", src[:s], dst[:d], dst[d:])
 }
