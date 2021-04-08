@@ -59,10 +59,18 @@ func (c Config) merge(f *flags.Flags) Config {
 
 	rts := make([]route.Route, 0, len(c.Routes)+len(f.Routes))
 	for _, e := range c.Routes {
-		rts = append(rts, e.WithHeaders(c.Headers).WithAPIKey(c.APIKey))
+		e = e.WithHeaders(c.Headers)
+		if c.APIKey.Valid() {
+			e = e.WithAPIKey(c.APIKey)
+		}
+		rts = append(rts, e)
 	}
 	for _, e := range f.Routes {
-		rts = append(rts, e.WithHeaders(c.Headers).WithAPIKey(c.APIKey))
+		e = e.WithHeaders(c.Headers)
+		if c.APIKey.Valid() {
+			e = e.WithAPIKey(c.APIKey)
+		}
+		rts = append(rts, e)
 	}
 	c.Routes = rts
 

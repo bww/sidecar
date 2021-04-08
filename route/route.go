@@ -20,7 +20,7 @@ type Route struct {
 	Addr    string            `json:"addr" yaml:"addr"`
 	URL     string            `json:"url" yaml:"url"`
 	Headers map[string]string `json:"headers" yaml:"headers"`
-	APIKey  APIKey            `json:"api_key" yaml:"api_key"`
+	APIKey  APIKey            `json:"api_key" yaml:"api-key"`
 }
 
 func Parse(s string) (Route, error) {
